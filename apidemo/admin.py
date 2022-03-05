@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import User,Category,Articles
+from .articlesModel import Articles
+from .userModel import User
+from .categoryModel import Category
 # Register your models here.
 admin.site.register(User)
 admin.site.register(Category)
