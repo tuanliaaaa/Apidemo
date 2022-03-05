@@ -5,14 +5,16 @@ from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
 from rest_framework.response import Response
-from .models import User, Articles,Category
-from rest_framework import permissions
+from .categoryModel import Category
+from .userModel import User
+from .articlesModel import Articles
+from rest_framework.permissions import BasePermission ,AllowAny
 from rest_framework.decorators import APIView
 
 # ------------------------Start User -----------------
 
 class UserApiGetAll(APIView):
-    
+    permission_classes = [AllowAny]
     def get(self,request):
         
         ListUser = User.objects.all()
