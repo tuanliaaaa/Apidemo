@@ -1,13 +1,10 @@
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
+
 from django.urls import  path
 
-from .views import ArticlesApiGetAll, UserApiGetAll, UserApigetbyid,ArticlesApiGetById,CategoryApiGetall,CatrgoryApiGetByid,CategoriesViewChilden,CategoriesViewParent
+from .views import ArticlesApiGetAll, UserApiGetAll, UserApigetbyid,ArticlesApiGetById,CategoryApiGetall, CatrgoryApiGetByid,CategoriesViewChilden,CategoriesViewParent,TokenView
 urlpatterns = [
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', TokenView.as_view(), name='token_obtain_pair'),
+    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('users',UserApiGetAll.as_view()),
     path('users/<int:id>',UserApigetbyid.as_view()),
     path('articles',ArticlesApiGetAll.as_view()),

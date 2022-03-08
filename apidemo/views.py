@@ -1,4 +1,5 @@
 from types import prepare_class
+from urllib import request
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.http.response import JsonResponse
@@ -8,15 +9,52 @@ from rest_framework.response import Response
 from .categoryModel import Category
 from .userModel import User
 from .articlesModel import Articles
-from rest_framework.permissions import BasePermission ,AllowAny
+import time
+import jwt
+from datetime import datetime,timedelta,timezone
+key="tuan"
 from rest_framework.decorators import APIView
 
 # ------------------------Start User -----------------
 
-class UserApiGetAll(APIView):
-    permission_classes = [AllowAny]
-    def get(self,request):
+def CheckAuth(a,CheckArticles=0):
+    try:
         
+        jwt_payloadSplit=a['Authorization'].split(' ')
+        jwt_payload = jwt_payloadSplit[1]
+        jwt_payloadDecode=jwt.decode(jwt_payload, key, algorithms=["HS256"])
+        if jwt_payloadDecode['Group']=="admin":
+            return 1
+        else:
+            if(CheckArticles):
+                print('vcl')
+                return 1
+            else:
+                    return 0
+    except:
+        return 0
+
+class TokenView(APIView):
+    
+    def post(self,request):
+        exp=datetime.now(tz=timezone.utc) + timedelta(minutes=50)
+        UserRequestToken =request.data
+        if not UserRequestToken['UserName']:
+            return Response({'Vui lòng nhập UserName'},status=status.HTTP_400_BAD_REQUEST)
+        if not UserRequestToken['PassWord']:
+            return Response({'Vui lòng nhập mật khẩu'},status=status.HTTP_400_BAD_REQUEST)
+        try:
+            Users= User.objects.get(UserName=UserRequestToken['UserName'],PassWord=UserRequestToken['PassWord'])
+        except:
+            return Response({'User này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
+        PayLoad = {'UserID':Users.pk,"UserName":Users.UserName,"Email":Users.Email,"Group":Users.GroupUser.GroupName,"exp":exp}
+        jwt_payload = jwt.encode(PayLoad,key,)
+        return Response({"access":jwt_payload},status=status.HTTP_201_CREATED)
+class UserApiGetAll(APIView):    
+    def get(self,request):   
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListUser = User.objects.all()
         ListUserJson = []
         for Users in ListUser:
@@ -25,6 +63,9 @@ class UserApiGetAll(APIView):
         return Response(ListUserJson,status=status.HTTP_200_OK)
     
     def post(self,request):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewUser = request.data
         if  not NewUser['UserName']:
             return Response({'message':'Trường UserName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
@@ -38,6 +79,9 @@ class UserApiGetAll(APIView):
     
 class UserApigetbyid(APIView):
     def get(self,request,id):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
@@ -45,6 +89,9 @@ class UserApigetbyid(APIView):
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+           return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
@@ -60,6 +107,9 @@ class UserApigetbyid(APIView):
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
@@ -73,6 +123,9 @@ class UserApigetbyid(APIView):
 
 class ArticlesApiGetAll(APIView):
     def get(self,request):
+        checkAuths=CheckAuth(request.headers,1)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListArticles = Articles.objects.all()
         ListArticlesJson = []
         for Article in ListArticles:
@@ -80,6 +133,9 @@ class ArticlesApiGetAll(APIView):
             ListArticlesJson.append(ArticleJson)
         return Response(ListArticlesJson,status=status.HTTP_200_OK)
     def post(self,request):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+           return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewArticles
         if  not 'UserName' in NewArticles:
             return Response({'message':'Trường UserName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
@@ -103,7 +159,11 @@ class ArticlesApiGetAll(APIView):
         return Response(ArticleJson,status=status.HTTP_201_CREATED)
 
 class ArticlesApiGetById(APIView):
+
     def get(self,request,id):
+        checkAuths=CheckAuth(request.headers,1)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
         except:
@@ -111,6 +171,9 @@ class ArticlesApiGetById(APIView):
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
+        checkAuths=CheckAuth(request.headers,1)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
         except:
@@ -136,6 +199,9 @@ class ArticlesApiGetById(APIView):
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
+        checkAuths=CheckAuth(request.headers,1)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
         except:
@@ -149,6 +215,9 @@ class ArticlesApiGetById(APIView):
 
 class CategoryApiGetall(APIView):
     def get(self,request):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategories=Category.objects.all()
         ListCategoriesJson=[]
         for Categorie in ListCategories:
@@ -156,6 +225,9 @@ class CategoryApiGetall(APIView):
             ListCategoriesJson.append(CategorieJson)
         return Response(ListCategoriesJson,status=status.HTTP_200_OK)
     def post(self,request):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewCategorie =request.data
         if not 'CategoryName' in NewCategorie:
             return Response({'message':'Trường CategoryName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
@@ -174,6 +246,9 @@ class CategoryApiGetall(APIView):
 
 class CatrgoryApiGetByid(APIView):
     def get(self,request,id):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
         except:
@@ -203,6 +278,9 @@ class CatrgoryApiGetByid(APIView):
 
 class CategoriesViewChilden(APIView):
     def get(self,request,id):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategories = Category.objects.filter(CategoryCodeParent=id)
         ListCategoriesJson=[]
         for Categorie in ListCategories:
@@ -211,6 +289,9 @@ class CategoriesViewChilden(APIView):
         return Response(ListCategoriesJson,status=status.HTTP_200_OK)
 class CategoriesViewParent(APIView):
     def get(self,request,id):
+        checkAuths=CheckAuth(request.headers)
+        if(not checkAuths):
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategoriesParent = []
         CategoryCodeParentNow = Category.objects.get(pk=id).CategoryCodeParent
 
