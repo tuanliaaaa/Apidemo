@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="FormRequestAjax">
+        <label for="">UserName</label> <input type="text" id="UserName">
+        <label for="">PassWord</label> <input type="text" id="PassWord">
+        <label id="error" style="display: none;"></label>
+        <input type="button"  onclick="SendRequestAjax()" value="đăng nhập">
+    </div>
+    <script>
+        function SendRequestAjax()
+        {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                var UserResponseJson=xhttp.responseText
+                var UserResponse= JSON.parse(UserResponseJson)
+                if(xhttp.status==200)
+                {
+                    document.getElementById("FormRequestAjax").innerHTML = 'Đăng nhập thành công'
+                    localStorage.setItem("Token", UserResponse['access']);
+                    
+                }
+                else
+                {
+                    document.getElementById("error").innerText=UserResponse['massage']
+                    document.getElementById("error").style="display:inline-block"
+                }
+            }
+            const userInfor={
+                UserName:document.getElementById("UserName").value,
+                PassWord:document.getElementById("PassWord").value
+            }
+            userInforJson=JSON.stringify(userInfor)
+            xhttp.open("POST", "{% url 'LoginApi' %}",false);
+            xhttp.setRequestHeader("Content-type","application/json")
+            xhttp.send(userInforJson);
+        }
+    </script>
+</body>
+</html>

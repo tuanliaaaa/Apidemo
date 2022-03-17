@@ -5,11 +5,10 @@ from .categoryModel import Category
 from .userModel import User
 from .articlesModel import Articles
 from rest_framework.decorators import APIView
-from .checkAuthViews import CheckAuth
+
 class ArticlesApiGetAll(APIView):
     def get(self,request):
-        isAuthenticated=CheckAuth(request.headers,1)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListArticles = Articles.objects.all()
         ListArticlesJson = []
@@ -18,10 +17,9 @@ class ArticlesApiGetAll(APIView):
             ListArticlesJson.append(ArticleJson)
         return Response(ListArticlesJson,status=status.HTTP_200_OK)
     def post(self,request):
-        isAuthenticated=CheckAuth(request.headers)
-        if(not isAuthenticated):
-           return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
-        NewArticles
+        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
+        NewArticles=request.data
         if  not 'UserName' in NewArticles:
             return Response({'message':'Trường UserName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
         if not 'Category'  in NewArticles :
@@ -46,8 +44,7 @@ class ArticlesApiGetAll(APIView):
 class ArticlesApiGetById(APIView):
 
     def get(self,request,id):
-        isAuthenticated=CheckAuth(request.headers,1)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
@@ -56,8 +53,7 @@ class ArticlesApiGetById(APIView):
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
-        isAuthenticated=CheckAuth(request.headers,1)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
@@ -84,8 +80,7 @@ class ArticlesApiGetById(APIView):
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
-        isAuthenticated=CheckAuth(request.headers,1)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)

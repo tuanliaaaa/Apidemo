@@ -4,9 +4,10 @@ from .userViews import  UserApiGetAll, UserApiGetById
 from .articlesViews import ArticlesApiGetAll,ArticlesApiGetById
 from .categoryViews import CategoriesViewChilden,CategoryApiGetall,CatrgoryApiGetByid,CategoriesViewParent
 from .tokenViews import TokenView
+from .loginViews import LoginAjax
 urlpatterns = [
-    path('api/token/', TokenView.as_view(), name='token_obtain_pair'),
-    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', TokenView.as_view(), name='LoginApi'),
+    path('login/',LoginAjax.as_view()),
     path('users',UserApiGetAll.as_view()),
     path('users/<int:id>',UserApiGetById.as_view()),
     path('articles',ArticlesApiGetAll.as_view()),
