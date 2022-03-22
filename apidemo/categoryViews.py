@@ -7,7 +7,7 @@ from rest_framework.decorators import APIView
 
 class CategoryApiGetall(APIView):
     def get(self,request):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategories=Category.objects.all()
         ListCategoriesJson=[]
@@ -16,7 +16,7 @@ class CategoryApiGetall(APIView):
             ListCategoriesJson.append(CategorieJson)
         return Response(ListCategoriesJson,status=status.HTTP_200_OK)
     def post(self,request):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewCategorie =request.data
         if not 'CategoryName' in NewCategorie:
@@ -36,7 +36,7 @@ class CategoryApiGetall(APIView):
 
 class CatrgoryApiGetByid(APIView):
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
@@ -45,7 +45,7 @@ class CatrgoryApiGetByid(APIView):
         CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
         return Response(CategorieJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
@@ -60,7 +60,7 @@ class CatrgoryApiGetByid(APIView):
         CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
         return Response(CategorieJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
@@ -71,7 +71,7 @@ class CatrgoryApiGetByid(APIView):
 
 class CategoriesViewChilden(APIView):
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategories = Category.objects.filter(CategoryCodeParent=id)
         ListCategoriesJson=[]
@@ -81,7 +81,7 @@ class CategoriesViewChilden(APIView):
         return Response(ListCategoriesJson,status=status.HTTP_200_OK)
 class CategoriesViewParent(APIView):
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategoriesParent = []
         CategoryCodeParentNow = Category.objects.get(pk=id).CategoryCodeParent

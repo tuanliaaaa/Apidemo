@@ -6,7 +6,7 @@ from rest_framework.decorators import APIView
 
 class UserApiGetAll(APIView):    
     def get(self,request):   
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListUser = User.objects.all()
         ListUserJson = []
@@ -16,7 +16,7 @@ class UserApiGetAll(APIView):
         return Response(ListUserJson,status=status.HTTP_200_OK)
     
     def post(self,request):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewUser = request.data
         if  not NewUser['UserName']:
@@ -31,7 +31,7 @@ class UserApiGetAll(APIView):
     
 class UserApiGetById(APIView):
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
@@ -40,7 +40,7 @@ class UserApiGetById(APIView):
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
@@ -57,7 +57,7 @@ class UserApiGetById(APIView):
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
-        if 'admin' not in request.groupsName:
+        if 'admin' not in request.groupNames:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)

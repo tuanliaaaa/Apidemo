@@ -1,6 +1,6 @@
 from  News.settings import key
 import jwt
-class SimpleMiddleware:
+class AuthorizationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
     def __call__(self, request):   
@@ -8,6 +8,6 @@ class SimpleMiddleware:
             jwtTokenSplit=request.headers['Authorization'].split(' ')
             jwtTokenpayload = jwtTokenSplit[1]
             PayLoad=jwt.decode(jwtTokenpayload, key, algorithms=["HS256"])
-            request.groupsName=PayLoad['Group']
+            request.groupNames=PayLoad['Group']
         response = self.get_response(request)
         return response

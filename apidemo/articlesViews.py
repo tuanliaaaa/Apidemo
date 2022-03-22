@@ -8,16 +8,16 @@ from rest_framework.decorators import APIView
 
 class ArticlesApiGetAll(APIView):
     def get(self,request):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
+        if 'admin' not in request.groupNames and 'Editor' not in request.groupNames :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
-        ListArticles = Articles.objects.all()
-        ListArticlesJson = []
-        for Article in ListArticles:
-            ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
-            ListArticlesJson.append(ArticleJson)
-        return Response(ListArticlesJson,status=status.HTTP_200_OK)
+        articles = Articles.objects.all()
+        articleViewModel = []
+        for article in articles:
+            articleJson={'id':article.id,'UserName':article.User.UserName,'Title':article.Title,'Content':article.Content,'Category':article.Category.CategoryName}
+            articleViewModel.append(articleJson)
+        return Response(articleViewModel,status=status.HTTP_200_OK)
     def post(self,request):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
+        if 'admin' not in request.groupNames and 'Editor' not in request.groupNames :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewArticles=request.data
         if  not 'UserName' in NewArticles:
@@ -44,7 +44,7 @@ class ArticlesApiGetAll(APIView):
 class ArticlesApiGetById(APIView):
 
     def get(self,request,id):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
+        if 'admin' not in request.groupNames and 'Editor' not in request.groupNames :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
@@ -53,7 +53,7 @@ class ArticlesApiGetById(APIView):
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
+        if 'admin' not in request.groupNames and 'Editor' not in request.groupNames :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
@@ -80,7 +80,7 @@ class ArticlesApiGetById(APIView):
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
+        if 'admin' not in request.groupNames and 'Editor' not in request.groupNames :
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)

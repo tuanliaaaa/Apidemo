@@ -1,0 +1,101 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+.main
+{
+    display: flex;
+    
+}
+.container
+{
+    margin: auto;
+    margin-top: 104px;
+    min-width: 394px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.container .container__header
+{
+    background-color: #417690;
+    height: 50px;
+    display: flex;
+}
+.container__header .container__header__title
+{
+    margin: auto;
+    cursor: pointer;
+}
+.container__header__title .header__title__content
+{
+
+}
+.header__title__content
+{
+    color: white;
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    font-weight: 100;
+    font-size: 18px;
+}
+/*body*/
+.container__body
+{
+    background-color: #fff;
+    min-height: 230px;
+    padding: 20px;
+}
+.container__body .container__body__form
+{
+
+}
+.container__body__form .body__form__content
+{
+
+}
+.body__form__content .form__content__text
+{
+    padding: 4px;
+
+}
+.form__content__text label
+{
+    display: block;
+    line-height: 2em;
+}
+.form__content__text input
+{
+    display: block;
+    margin: 2px 0;
+    padding: 8px;
+    background-color: #E8F0FE;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 100%;
+}
+#form__content__text__error
+{
+    display: none;
+}
+.container__body__form .body__form__button
+{
+    padding: 1em;
+    display: flex;
+}
+.body__form__button input
+{
+    margin: auto;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: none;
+    opacity: 0.5;
+    background-color: #79AEC8;
+    color: white;
+    margin-bottom: 2px;
+}
+input[type="button"]:hover
+{
+    opacity: 1;
+}
+
