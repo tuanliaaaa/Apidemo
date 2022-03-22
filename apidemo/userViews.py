@@ -3,11 +3,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from .userModel import User
 from rest_framework.decorators import APIView
-from .checkAuthViews import CheckAuth
+
 class UserApiGetAll(APIView):    
     def get(self,request):   
-        isAuthenticated=CheckAuth(request.headers)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListUser = User.objects.all()
         ListUserJson = []
@@ -17,8 +16,7 @@ class UserApiGetAll(APIView):
         return Response(ListUserJson,status=status.HTTP_200_OK)
     
     def post(self,request):
-        isAuthenticated=CheckAuth(request.headers)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewUser = request.data
         if  not NewUser['UserName']:
@@ -33,8 +31,7 @@ class UserApiGetAll(APIView):
     
 class UserApiGetById(APIView):
     def get(self,request,id):
-        isAuthenticated=CheckAuth(request.headers)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
@@ -43,9 +40,8 @@ class UserApiGetById(APIView):
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_200_OK)
     def patch(self,request,id):
-        isAuthenticated=CheckAuth(request.headers)
-        if(not isAuthenticated):
-           return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
+        if 'admin' not in request.groupsName:
+            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
@@ -61,8 +57,7 @@ class UserApiGetById(APIView):
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_205_RESET_CONTENT)
     def delete(self,request,id):
-        isAuthenticated=CheckAuth(request.headers)
-        if(not isAuthenticated):
+        if 'admin' not in request.groupsName:
             return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
