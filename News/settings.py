@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'apidemo.apps.ApidemoConfig',
     'rest_framework',
+    'Home.apps.HomeConfig',
 ]
 
 MIDDLEWARE = [
