@@ -1,23 +1,23 @@
 from types import prepare_class
+from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
 from .userModel import User
 from rest_framework.decorators import APIView
-
-class UserApiGetAll(APIView):    
+from News.decorators import RoleRequest
+from rest_framework.decorators import api_view
+from django.utils.decorators import method_decorator
+class UserApiGetAll(APIView):  
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):   
-        if 'admin' not in request.groupNames:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListUser = User.objects.all()
         ListUserJson = []
         for Users in ListUser:
             UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
             ListUserJson.append(UserJson)
         return Response(ListUserJson,status=status.HTTP_200_OK)
-    
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def post(self,request):
-        if 'admin' not in request.groupNames:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewUser = request.data
         if  not NewUser['UserName']:
             return Response({'message':'Trường UserName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
@@ -30,18 +30,16 @@ class UserApiGetAll(APIView):
         return Response({'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email},status=status.HTTP_201_CREATED)
     
 class UserApiGetById(APIView):
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        if 'admin' not in request.groupNames:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
             return Response({'message':'User này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_200_OK)
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def patch(self,request,id):
-        if 'admin' not in request.groupNames:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
@@ -56,9 +54,8 @@ class UserApiGetById(APIView):
         Users.save()
         UserJson={'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email}
         return Response(UserJson,status=status.HTTP_205_RESET_CONTENT)
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def delete(self,request,id):
-        if 'admin' not in request.groupNames:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Users = User.objects.get(pk=id)
         except:
