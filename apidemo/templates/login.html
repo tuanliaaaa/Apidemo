@@ -41,6 +41,11 @@
         </div>
     </div>
     <script>
+         if ( localStorage.getItem("Token") )
+        {
+            window.location='/home'
+        }
+        
         function SendRequestAjax()
         {
             function getCookie(name) 

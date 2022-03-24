@@ -15,9 +15,8 @@ class AuthorizationMiddleware:
                 PayLoad=jwt.decode(jwtTokenpayload, key, algorithms=["HS256"])
                 request.groupNames=PayLoad['Group']
                 request.userID=PayLoad['UserID']
-                print(request.groupNames)
+               
             except:
-                print('xcuv vat')
                 a=json.loads('{"message":"Token đã hết hạn"}')
                 return HttpResponse(a,status =status.HTTP_403_FORBIDDEN)
         response = self.get_response(request)
