@@ -7,8 +7,13 @@ from rest_framework.decorators import APIView
 from News.decorators import RoleRequest
 from rest_framework.decorators import api_view
 from django.utils.decorators import method_decorator
+class UserInformationByToken(APIView):
+    def get(self,request):
+        user= User.objects.get(pk=request.userID)
+        userJson ={'id':user.id,'UserName':user.UserName,'Age':user.Age,'Email':user.Email,'GroupNames':request.groupNames}
+        return Response(userJson,status=status.HTTP_200_OK)
 class UserApiGetAll(APIView):  
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):   
         ListUser = User.objects.all()
         ListUserJson = []
@@ -30,7 +35,7 @@ class UserApiGetAll(APIView):
         return Response({'id':Users.id,'UserName':Users.UserName,'Age':Users.Age,'Email':Users.Email},status=status.HTTP_201_CREATED)
     
 class UserApiGetById(APIView):
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
         try:
             Users = User.objects.get(pk=id)

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+</head>
+<body>
+    <header id="header">
+        <div class="header__navbar">
+            <div class="header__navbar__logout">
+                <a  href='#' onclick="LogOut()">LogOut</a>
+            </div>
+        </div>
+    </header>
+    <container id="container">
+        <div class="container__body">
+            <div class="container__body__inforuser">
+                <div class="body__inforuser__left">
+                    <div class="inforuser__left__img">
+                        <img src="https://scontent.fhan2-2.fna.fbcdn.net/v/t39.30808-6/272807867_669874974031082_8247604913488167459_n.jpg?_nc_cat=111&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=aXd6xuXwvr4AX8uijj1&_nc_ht=scontent.fhan2-2.fna&oh=00_AT_zkDEo53cSIoK6hgHdff0GFqzy-gVPow9OMsr_zuj1rA&oe=623F6732" alt="">
+                    </div>
+                    <div class="inforuser__left__desc">
+                        <p class="Name"><p>
+                    </div> 
+                </div>
+                <div class="body__inforuser__right">
+                    <div class="inforuser__right__content">
+                        <p>Name: <span class="Name"></span></p>
+                        <p>Age: <span id="Age"></span></p>
+                        <p>Email: <span id="Email"></span></p>
+                        <p>Groups: <span id="GroupNames"></span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="container__body__main">
+                <div class="table__groupuser">
+                    <table id="TableUsers">
+                        
+                    </table>
+                      <div class="main__table__content">
+                          <h6>Table Users</h6>
+                      </div>
+                </div>
+                <div class="table__articles">
+                    <table id="TableGroups">
+                       
+                    </table>
+                      <div  class="main__table__content">
+                          <h6>Table Groups</h6>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </container>
+    <script>
+        
+        if (localStorage.getItem("Token"))
+        {
+            CheckAuthor()
+        }
+        else
+        {
+            window.location='/login/'
+        }
+        function CheckAuthor()
+        {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                if(xhttp.status==403)
+                {
+                    window.location='/login/'
+                    localStorage.removeItem('Token');
+                }
+                var userResponseJson=xhttp.responseText
+                var userResponse= JSON.parse(userResponseJson)
+                
+                if(xhttp.status==200)
+                {
+                    document.getElementsByClassName("Name")[0].innerText=userResponse['UserName']
+                    document.getElementsByClassName("Name")[1].innerText=userResponse['UserName']
+                    document.getElementById("Age").innerText=userResponse['Age']
+                    document.getElementById("Email").innerText=userResponse['Email']
+                    document.getElementById("GroupNames").innerText =userResponse['GroupNames']
+                    GetDataTableUser()
+                    GetDataTableGroup()
+                }
+                else 
+                {
+                    
+                    window.location='/login/'
+                }
+            }            
+            xhttp.open("GET", "/api/v1.0/user",false)
+            token = localStorage.getItem("Token")
+            authorization ='Bearer '+token
+            xhttp.setRequestHeader("Authorization",authorization)
+            xhttp.send()
+        }
+        function GetDataTableUser()
+        {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                if(xhttp.status==403)
+                {
+                    window.location='/login/'
+                    localStorage.removeItem('Token');
+                }
+                var userResponseJsons=xhttp.responseText
+                var userResponses= JSON.parse(userResponseJsons)
+                if(xhttp.status==200)
+                {
+                    tableUserHtml = '<tr><th>UserName</th><th>Email</th></tr>'
+                    console.log(userResponses)
+                    for (var i in userResponses)
+                    {
+                        tableUserHtml+='<tr><th>'+userResponses[i]['UserName']+'</th><th>'+userResponses[i]['Email']+'</th></tr>'
+                    }
+                    document.getElementById("TableUsers").innerHTML=tableUserHtml
+                }
+                else
+                {
+                    window.location='/login/'
+                }
+            }            
+            xhttp.open("GET", "/api/v1.0/users",false)
+            token = localStorage.getItem("Token")
+            authorization ='Bearer '+token
+            xhttp.setRequestHeader("Authorization",authorization)
+            xhttp.send()
+        }
+        function GetDataTableGroup()
+        {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                if(xhttp.status==403)
+                {
+                    window.location='/login/'
+                    localStorage.removeItem('Token');
+                }
+                var groupResponseJsons=xhttp.responseText
+                var groupResponses= JSON.parse(groupResponseJsons)
+                if(xhttp.status==200)
+                {
+                    tablegroupHtml = '<tr><th>IdGruop</th><th>GroupName</th></tr>'
+                 
+                    for (var i in groupResponses)
+                    {
+                        tablegroupHtml+='<tr><th>'+groupResponses[i]['id']+'</th><th>'+groupResponses[i]['GroupName']+'</th></tr>'
+                    }
+                    document.getElementById("TableGroups").innerHTML=tablegroupHtml
+                }
+                else
+                {
+                    window.location='/login/'
+                }
+            }            
+            xhttp.open("GET", "/api/v1.0/groups",false)
+            token = localStorage.getItem("Token")
+            authorization ='Bearer '+token
+            xhttp.setRequestHeader("Authorization",authorization)
+            xhttp.send()
+        }
+        function LogOut()
+        {
+            window.location="/login/"
+            localStorage.removeItem('Token');
+        }
+        
+    </script>
+</body>
+</html>

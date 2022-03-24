@@ -1,0 +1,118 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; 
+ }
+ #header
+ {
+ 
+ }
+ #header .header__navbar
+ {
+     height: 48px;
+     background-color: #417690;
+ 
+ }
+ #header .header__navbar__logout
+ {
+     float: right;
+     line-height: 48px;
+    
+ }
+ .header__navbar__logout a
+ {
+     color: white;
+     margin-right: 20px;
+ }
+ 
+ /*-------------------Container----------------*/
+ 
+ #container
+ {
+ 
+ }
+ #container .container__body
+ {
+     max-width: 800px;
+     margin: 20px auto ;
+ }
+ .container__body .container__body__inforuser
+ {
+     background-color: white;
+     border:2px solid #417690;
+     height: 200px;
+     margin-bottom: 20px;
+ }
+ .container__body__inforuser .body__inforuser__left
+ {
+     width: 25%;
+     height: 100%;
+     display: inline-block;
+     border-right:2px solid #417690;
+ }
+ .body__inforuser__left .inforuser__left__img
+ {
+     width: 100px;
+     height: 100px;
+     margin: 20px auto;
+ }
+ .inforuser__left__img img
+ {
+     width: 100px;
+     height: 100px;
+     border-radius: 50%;
+ }
+ .inforuser__left__img .inforuser__left__desc
+ {
+     
+ }
+ .inforuser__left__desc p
+ {
+     font-size: 24px;
+     text-align: center;
+ }
+ .container__body__inforuser .body__inforuser__right
+ {
+     width: 75%;
+     float: right;
+     height: 100%;
+     text-align: center;
+     display: flex;
+ }
+ .body__inforuser__right .inforuser__right__content
+ {
+     margin: auto;
+ }
+ .inforuser__right__content p
+ {
+     font-size: 24px;
+ }
+ .container__body .container__body__main
+ {
+ 
+ }
+ .container__body__main table,th,td
+ {
+     border: 2px solid #417690;
+ }
+ .container__body__main table
+ {
+     width: 100%;
+     border-collapse: collapse;
+     text-align: center;
+     margin-bottom: 10px;
+ }
+ table .main__table__content
+ {
+     
+ }
+ .main__table__content h6
+ {
+     font-size: 20px;
+     text-align: center;
+     margin-bottom: 20px;
+ }
+ .table__groupuser table 
+ {
+ 
+ }

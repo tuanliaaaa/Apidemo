@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'login.css' %}">
 </head>
 <body>    
     <div class="main" id="main">
@@ -14,7 +14,7 @@
             <div class="container__header">
                 <div class="container__header__title">
                     <h1 class="header__title__content" >
-                        Django administration
+                        Login Ajax
                     </h1>
                 </div>
             </div>
@@ -71,8 +71,8 @@
                 var userResponse= JSON.parse(userResponseJson)
                 if(xhttp.status==200)
                 {
-                    document.getElementById("main").innerHTML = 'Đăng nhập thành công'
                     localStorage.setItem("Token", userResponse['access']);
+                    window.location='/home'
                     
                 }
                 else
@@ -88,7 +88,7 @@
             userInforJson=JSON.stringify(userInfor)
             xhttp.open("POST", "/api/v1.0/api/token/",false);
             xhttp.setRequestHeader("Content-type","application/json")
-            console.log(csrftoken)
+
             xhttp.setRequestHeader("X-CSRFToken", csrftoken);
             xhttp.send(userInforJson)
         }
