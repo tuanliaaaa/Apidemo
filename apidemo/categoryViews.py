@@ -4,20 +4,20 @@ from rest_framework.response import Response
 from .categoryModel import Category
 from datetime import datetime,timedelta,timezone
 from rest_framework.decorators import APIView
-
+from django.utils.decorators import method_decorator
+from News.decorators import RoleRequest
 class CategoryApiGetall(APIView):
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
+        
         ListCategories=Category.objects.all()
         ListCategoriesJson=[]
         for Categorie in ListCategories:
             CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
             ListCategoriesJson.append(CategorieJson)
         return Response(ListCategoriesJson,status=status.HTTP_200_OK)
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def post(self,request):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewCategorie =request.data
         if not 'CategoryName' in NewCategorie:
             return Response({'message':'Trường CategoryName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
@@ -35,18 +35,16 @@ class CategoryApiGetall(APIView):
         return Response(CategorieJson,status=status.HTTP_201_CREATED)
 
 class CatrgoryApiGetByid(APIView):
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
         except:
             return Response({'massage':'Categorie này không tồn tại'})
         CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
         return Response(CategorieJson,status=status.HTTP_200_OK)
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def patch(self,request,id):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
         except:
@@ -59,9 +57,8 @@ class CatrgoryApiGetByid(APIView):
         Categorie.save()
         CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
         return Response(CategorieJson,status=status.HTTP_205_RESET_CONTENT)
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def delete(self,request,id):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Categorie =Category.objects.get(pk=id)
         except:
@@ -70,9 +67,8 @@ class CatrgoryApiGetByid(APIView):
         return Response({'massage':'Categorie đã xóa thành công'},status=status.HTTP_204_NO_CONTENT)
 
 class CategoriesViewChilden(APIView):
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategories = Category.objects.filter(CategoryCodeParent=id)
         ListCategoriesJson=[]
         for Categorie in ListCategories:
@@ -80,9 +76,8 @@ class CategoriesViewChilden(APIView):
             ListCategoriesJson.append(CategoryJson)
         return Response(ListCategoriesJson,status=status.HTTP_200_OK)
 class CategoriesViewParent(APIView):
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        if 'admin' not in request.groupsName:
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         ListCategoriesParent = []
         CategoryCodeParentNow = Category.objects.get(pk=id).CategoryCodeParent
 

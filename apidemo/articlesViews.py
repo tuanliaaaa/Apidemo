@@ -5,20 +5,19 @@ from .categoryModel import Category
 from .userModel import User
 from .articlesModel import Articles
 from rest_framework.decorators import APIView
-
+from django.utils.decorators import method_decorator
+from News.decorators import RoleRequest
 class ArticlesApiGetAll(APIView):
+    @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def get(self,request):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
-        ListArticles = Articles.objects.all()
-        ListArticlesJson = []
-        for Article in ListArticles:
-            ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
-            ListArticlesJson.append(ArticleJson)
-        return Response(ListArticlesJson,status=status.HTTP_200_OK)
+        articles = Articles.objects.all()
+        articleViewModel = []
+        for article in articles:
+            articleJson={'id':article.id,'UserName':article.User.UserName,'Title':article.Title,'Content':article.Content,'Category':article.Category.CategoryName}
+            articleViewModel.append(articleJson)
+        return Response(articleViewModel,status=status.HTTP_200_OK)
+    @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def post(self,request):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         NewArticles=request.data
         if  not 'UserName' in NewArticles:
             return Response({'message':'Trường UserName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
@@ -42,19 +41,16 @@ class ArticlesApiGetAll(APIView):
         return Response(ArticleJson,status=status.HTTP_201_CREATED)
 
 class ArticlesApiGetById(APIView):
-
+    @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def get(self,request,id):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
         except:
             return Response({'message':'Article này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_200_OK)
+    @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def patch(self,request,id):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
         except:
@@ -79,9 +75,8 @@ class ArticlesApiGetById(APIView):
         Article.save()
         ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
         return Response(ArticleJson,status=status.HTTP_205_RESET_CONTENT)
+    @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def delete(self,request,id):
-        if 'admin' not in request.groupsName and 'Editor' not in request.groupsName :
-            return Response({"message":"bạn không có quyền truy cập"},status=status.HTTP_400_BAD_REQUEST)
         try:
             Article = Articles.objects.get(pk=id)
         except:

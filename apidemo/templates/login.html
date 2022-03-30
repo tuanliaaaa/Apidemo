@@ -1,46 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="{% static 'login.css' %}">
 </head>
-<body>
-    <div id="FormRequestAjax">
-        <label for="">UserName</label> <input type="text" id="UserName">
-        <label for="">PassWord</label> <input type="text" id="PassWord">
-        <label id="error" style="display: none;"></label>
-        <input type="button"  onclick="SendRequestAjax()" value="đăng nhập">
+<body>    
+    <div class="main" id="main">
+        <div class="container">
+            <div class="container__header">
+                <div class="container__header__title">
+                    <h1 class="header__title__content" >
+                        Login Ajax
+                    </h1>
+                </div>
+            </div>
+            <div class="container__body">
+                <div class="container__body__form">
+                    <div class="body__form__content">
+                        <div class="form__content__text">
+                            <label for="UserName">UserName</label>
+                            <input id="UserName" type="text">
+                        </div>
+                        <div class="form__content__text">
+                            <label for="UserName">Password</label>
+                            <input id="Password" type="password">
+                        </div>
+                        <div id="form__content__text__error">
+                            <label id="error"></label>
+                        </div>
+                    </div>
+                    <div class="body__form__button">
+                        <input type="button" value="Log in" onclick=" SendRequestAjax()">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script>
+         if ( localStorage.getItem("Token") )
+        {
+            window.location='/home'
+        }
+        
         function SendRequestAjax()
         {
+            function getCookie(name) 
+            {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') 
+                {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) 
+                    {
+                        var cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) 
+                        {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() 
             {
-                var UserResponseJson=xhttp.responseText
-                var UserResponse= JSON.parse(UserResponseJson)
+                var userResponseJson=xhttp.responseText
+                var userResponse= JSON.parse(userResponseJson)
                 if(xhttp.status==200)
                 {
-                    document.getElementById("FormRequestAjax").innerHTML = 'Đăng nhập thành công'
-                    localStorage.setItem("Token", UserResponse['access']);
+                    localStorage.setItem("Token", userResponse['access']);
+                    window.location='/home'
                     
                 }
                 else
                 {
-                    document.getElementById("error").innerText=UserResponse['massage']
-                    document.getElementById("error").style="display:inline-block"
+                    document.getElementById("error").innerText=userResponse['message']
+                    document.getElementById("form__content__text__error").style="display:block"
                 }
-            }
+            }         
             const userInfor={
                 UserName:document.getElementById("UserName").value,
-                PassWord:document.getElementById("PassWord").value
+                PassWord:document.getElementById("Password").value
             }
             userInforJson=JSON.stringify(userInfor)
-            xhttp.open("POST", "{% url 'LoginApi' %}",false);
+            xhttp.open("POST", "/api/v1.0/api/token/",false);
             xhttp.setRequestHeader("Content-type","application/json")
-            xhttp.send(userInforJson);
+
+            xhttp.setRequestHeader("X-CSRFToken", csrftoken);
+            xhttp.send(userInforJson)
         }
     </script>
 </body>
