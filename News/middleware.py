@@ -10,11 +10,11 @@ class AuthorizationMiddleware:
     def __call__(self, request):   
         if 'Authorization' in request.headers:
             jwtTokenSplit=request.headers['Authorization'].split(' ')
-            jwtTokenpayload = jwtTokenSplit[1]
+            jwtTokenPayload = jwtTokenSplit[1]
             try:
-                PayLoad=jwt.decode(jwtTokenpayload, key, algorithms=["HS256"])
-                request.groupNames=PayLoad['Group']
-                request.userID=PayLoad['UserID']
+                payLoad=jwt.decode(jwtTokenPayload, key, algorithms=["HS256"])
+                request.groupNames=payLoad['Group']
+                request.userID=payLoad['UserID']
                
             except:
                 a=json.loads('{"message":"Token đã hết hạn"}')

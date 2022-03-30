@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from News.decorators import RoleLogin
+
 from django.utils.decorators import method_decorator
 from django.http.response import HttpResponseRedirect
 from audioop import reverse

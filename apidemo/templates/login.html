@@ -14,7 +14,7 @@
             <div class="container__header">
                 <div class="container__header__title">
                     <h1 class="header__title__content" >
-                        Login Ajax
+                        Login
                     </h1>
                 </div>
             </div>
@@ -22,19 +22,19 @@
                 <div class="container__body__form">
                     <div class="body__form__content">
                         <div class="form__content__text">
-                            <label for="UserName">UserName</label>
-                            <input id="UserName" type="text">
+                            <label for="Username">Username</label>
+                            <input id="Username" type="text" onkeyup="loginByEnter()">
                         </div>
                         <div class="form__content__text">
-                            <label for="UserName">Password</label>
-                            <input id="Password" type="password">
+                            <label for="Password">Password</label>
+                            <input id="Password" type="password" onkeyup="loginByEnter()">
                         </div>
                         <div id="form__content__text__error">
                             <label id="error"></label>
                         </div>
                     </div>
                     <div class="body__form__button">
-                        <input type="button" value="Log in" onclick=" SendRequestAjax()">
+                        <input type="button" value="Log in" onclick=" login()">
                     </div>
                 </div>
             </div>
@@ -43,10 +43,16 @@
     <script>
          if ( localStorage.getItem("Token") )
         {
-            window.location='/home'
+            window.location='/home';
         }
-        
-        function SendRequestAjax()
+        function loginByEnter()
+        {
+            if(event.keyCode==13)
+            {
+                login();
+            }
+        }
+        function login()
         {
             function getCookie(name) 
             {
@@ -68,34 +74,34 @@
                 return cookieValue;
             }
 
-            var csrftoken = getCookie('csrftoken');
+            var csrfToken = getCookie('csrftoken');
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() 
             {
-                var userResponseJson=xhttp.responseText
-                var userResponse= JSON.parse(userResponseJson)
+                var tokenResponseJson=xhttp.responseText
+                var tokenResponse= JSON.parse(tokenResponseJson)
                 if(xhttp.status==200)
                 {
-                    localStorage.setItem("Token", userResponse['access']);
+                    localStorage.setItem("Token", tokenResponse['access']);
                     window.location='/home'
                     
                 }
                 else
                 {
-                    document.getElementById("error").innerText=userResponse['message']
+                    document.getElementById("error").innerText=tokenResponse['message']
                     document.getElementById("form__content__text__error").style="display:block"
                 }
             }         
-            const userInfor={
-                UserName:document.getElementById("UserName").value,
+            const userInfo={
+                UserName:document.getElementById("Username").value,
                 PassWord:document.getElementById("Password").value
             }
-            userInforJson=JSON.stringify(userInfor)
+            postData=JSON.stringify(userInfo)
             xhttp.open("POST", "/api/v1.0/api/token/",false);
             xhttp.setRequestHeader("Content-type","application/json")
 
-            xhttp.setRequestHeader("X-CSRFToken", csrftoken);
-            xhttp.send(userInforJson)
+            xhttp.setRequestHeader("X-CSRFToken", csrfToken);
+            xhttp.send(postData)
         }
     </script>
 </body>

@@ -5,90 +5,87 @@ from .categoryModel import Category
 from datetime import datetime,timedelta,timezone
 from rest_framework.decorators import APIView
 from django.utils.decorators import method_decorator
-from News.decorators import RoleRequest
-class CategoryApiGetall(APIView):
+from .roleRequestDecorator import RoleRequest
+class CategoriesApiAll(APIView):
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):
-        
-        ListCategories=Category.objects.all()
-        ListCategoriesJson=[]
-        for Categorie in ListCategories:
-            CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
-            ListCategoriesJson.append(CategorieJson)
-        return Response(ListCategoriesJson,status=status.HTTP_200_OK)
+        categories=Category.objects.all()
+        categoryJsons=[]
+        for category in categories:
+            categoryJson={'id':category.id,'CategoryName':category.CategoryName}
+            categoryJsons.append(categoryJson)
+        return Response(categoryJsons,status=status.HTTP_200_OK)
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def post(self,request):
-        NewCategorie =request.data
-        if not 'CategoryName' in NewCategorie:
+        newCategory =request.data
+        if not 'CategoryName' in newCategory:
             return Response({'message':'Trường CategoryName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
-        if not 'CategoryCodeParent' in NewCategorie:
+        if not 'CategoryCodeParent' in newCategory:
             return Response({'message':'Trường CategoryCodeParent là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
         else:
-            if not isinstance(NewCategorie['CategoryCodeParent'], int):
+            if not isinstance(newCategory['CategoryCodeParent'], int):
                 return Response({'message':'Trường CategoryCodeParent là số nguyên vui lòng nhập lại'},status=status.HTTP_400_BAD_REQUEST)
             else:
-                if NewCategorie['CategoryCodeParent'] < 0:
+                if newCategory['CategoryCodeParent'] < 0:
                     return Response({'message':'Trường CategoryCodeParent là số nguyên lớn hơn 0 vui lòng nhập lại'},status=status.HTTP_400_BAD_REQUEST)
-        Categorie = Category(CategoryName=NewCategorie['CategoryName'],CategoryCodeParent=NewCategorie['CategoryCodeParent'])
-        Categorie.save()
-        CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
-        return Response(CategorieJson,status=status.HTTP_201_CREATED)
-
-class CatrgoryApiGetByid(APIView):
+        category = Category(CategoryName=newCategory['CategoryName'],CategoryCodeParent=newCategory['CategoryCodeParent'])
+        category.save()
+        categoryJson={'id':category.id,'CategoryName':category.CategoryName}
+        return Response(categoryJson,status=status.HTTP_201_CREATED)
+class CategoriesApiByid(APIView):
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
         try:
-            Categorie =Category.objects.get(pk=id)
+            category =Category.objects.get(pk=id)
         except:
             return Response({'massage':'Categorie này không tồn tại'})
-        CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
-        return Response(CategorieJson,status=status.HTTP_200_OK)
+        categoyJson={'id':category.id,'CategoryName':category.CategoryName}
+        return Response(categoyJson,status=status.HTTP_200_OK)
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def patch(self,request,id):
         try:
-            Categorie =Category.objects.get(pk=id)
+            category =Category.objects.get(pk=id)
         except:
             return Response({'massage':'Categorie này không tồn tại'})
-        UpdateCategorie =request.data
-        if 'CategoryName' in UpdateCategorie:
-            Categorie.CategoryName = UpdateCategorie['CategoryName']
-        if 'CategoryCodeParent' in UpdateCategorie:
-            Categorie.CategoryCodeParent= UpdateCategorie['CategoryCodeParent']
-        Categorie.save()
-        CategorieJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
-        return Response(CategorieJson,status=status.HTTP_205_RESET_CONTENT)
+        updateCategory =request.data
+        if 'CategoryName' in updateCategory:
+            category.CategoryName = updateCategory['CategoryName']
+        if 'CategoryCodeParent' in updateCategory:
+            category.CategoryCodeParent= updateCategory['CategoryCodeParent']
+        category.save()
+        categoryJson={'id':category.id,'CategoryName':category.CategoryName}
+        return Response(categoryJson,status=status.HTTP_205_RESET_CONTENT)
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def delete(self,request,id):
         try:
-            Categorie =Category.objects.get(pk=id)
+            category =Category.objects.get(pk=id)
         except:
             return Response({'massage':'Categorie này không tồn tại'})
-        Categorie.delete()
+        category.delete()
         return Response({'massage':'Categorie đã xóa thành công'},status=status.HTTP_204_NO_CONTENT)
 
 class CategoriesViewChilden(APIView):
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        ListCategories = Category.objects.filter(CategoryCodeParent=id)
-        ListCategoriesJson=[]
-        for Categorie in ListCategories:
-            CategoryJson={'id':Categorie.id,'CategoryName':Categorie.CategoryName}
-            ListCategoriesJson.append(CategoryJson)
-        return Response(ListCategoriesJson,status=status.HTTP_200_OK)
+        categories = Category.objects.filter(CategoryCodeParent=id)
+        categoryJsons=[]
+        for categorie in categories:
+            categoryJson={'id':categorie.id,'CategoryName':categorie.CategoryName}
+            categoryJsons.append(categoryJson)
+        return Response(categoryJsons,status=status.HTTP_200_OK)
 class CategoriesViewParent(APIView):
     @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        ListCategoriesParent = []
-        CategoryCodeParentNow = Category.objects.get(pk=id).CategoryCodeParent
-
-        def quaylui(i):
-            CategoryCheckBigger = Category.objects.get(pk=i)
-            CategoryJson={'id':CategoryCheckBigger.pk,'CategoryName':CategoryCheckBigger.CategoryName}
-            if CategoryCheckBigger.CategoryCodeParent!=0:
-                quaylui(CategoryCheckBigger.CategoryCodeParent)
-            ListCategoriesParent.append(CategoryJson)
-        if CategoryCodeParentNow!=0:
-            CategoryJson={'id':Category.objects.get(pk=CategoryCodeParentNow).pk,'CategoryName':Category.objects.get(pk=CategoryCodeParentNow).CategoryName}
-            quaylui(CategoryJson['id'])
+        categoriesParent = []
+        categoryCodeParentNow = Category.objects.get(pk=id).CategoryCodeParent
+        def ListCategoriesParent(i):
+            categoryCheckBigger = Category.objects.get(pk=i)
+            categoryJson={'id':categoryCheckBigger.pk,'CategoryName':categoryCheckBigger.CategoryName}
+            if categoryCheckBigger.CategoryCodeParent!=0:
+                ListCategoriesParent(categoryCheckBigger.CategoryCodeParent)
+            categoriesParent.append(categoryJson)
+        if categoryCodeParentNow!=0:
+            categoryJson={'id':Category.objects.get(pk=categoryCodeParentNow).pk,'CategoryName':Category.objects.get(pk=categoryCodeParentNow).CategoryName}
+            ListCategoriesParent(categoryJson['id'])
             return Response(ListCategoriesParent,status=status.HTTP_200_OK)
         return Response({'message':'Không có tập cha  nào cả'})

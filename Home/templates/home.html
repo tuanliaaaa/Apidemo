@@ -24,12 +24,12 @@
                         <img src="https://scontent.fhan2-2.fna.fbcdn.net/v/t39.30808-6/272807867_669874974031082_8247604913488167459_n.jpg?_nc_cat=111&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=aXd6xuXwvr4AX8uijj1&_nc_ht=scontent.fhan2-2.fna&oh=00_AT_zkDEo53cSIoK6hgHdff0GFqzy-gVPow9OMsr_zuj1rA&oe=623F6732" alt="">
                     </div>
                     <div class="inforuser__left__desc">
-                        <p class="Name"><p>
+                        <p id="Name"><p>
                     </div> 
                 </div>
                 <div class="body__inforuser__right">
                     <div class="inforuser__right__content">
-                        <p>Name: <span class="Name"></span></p>
+                        <p>Name: <span id="NameUser"></span></p>
                         <p>Age: <span id="Age"></span></p>
                         <p>Email: <span id="Email"></span></p>
                         <p>Groups: <span id="GroupNames"></span></p>
@@ -57,119 +57,118 @@
         </div>
     </container>
     <script>
-        
         if (localStorage.getItem("Token"))
         {
-            CheckAuthor()
+            checkAuthor();
+            getUsers();
+            getGroups();
         }
         else
         {
-            window.location='/login/'
+            window.location='/login/';
         }
-        function CheckAuthor()
+        function checkAuthor()
         {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() 
             {
                 if(xhttp.status==403)
                 {
-                    window.location='/login/'
+                    alert('bạn không có quyền truy cập trang này');
                     localStorage.removeItem('Token');
                 }
-                var userResponseJson=xhttp.responseText
-                var userResponse= JSON.parse(userResponseJson)
+                var userJson=xhttp.responseText;
+                var user= JSON.parse(userJson);
                 
                 if(xhttp.status==200)
                 {
-                    document.getElementsByClassName("Name")[0].innerText=userResponse['UserName']
-                    document.getElementsByClassName("Name")[1].innerText=userResponse['UserName']
-                    document.getElementById("Age").innerText=userResponse['Age']
-                    document.getElementById("Email").innerText=userResponse['Email']
-                    document.getElementById("GroupNames").innerText =userResponse['GroupNames']
-                    GetDataTableUser()
-                    GetDataTableGroup()
+                    document.getElementById('Name').innerText=user['UserName'];
+                    document.getElementById('NameUser').innerText=user['UserName'];
+                    document.getElementById("Age").innerText=user['Age'];
+                    document.getElementById("Email").innerText=user['Email'];
+                    document.getElementById("GroupNames").innerText =user['GroupNames'];
+
                 }
                 else 
                 {
                     
-                    window.location='/login/'
+                    window.location='/login/';
                 }
             }            
-            xhttp.open("GET", "/api/v1.0/user",false)
-            token = localStorage.getItem("Token")
-            authorization ='Bearer '+token
-            xhttp.setRequestHeader("Authorization",authorization)
-            xhttp.send()
+            xhttp.open("GET", "/api/v1.0/user",false);
+            token = localStorage.getItem("Token");
+            authorizationHeader ='Bearer '+token;
+            xhttp.setRequestHeader("Authorization",authorizationHeader);
+            xhttp.send();
         }
-        function GetDataTableUser()
+        function getUsers()
         {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() 
             {
                 if(xhttp.status==403)
                 {
-                    window.location='/login/'
+                    alert('bạn không có quyền truy cập trang này');
                     localStorage.removeItem('Token');
                 }
-                var userResponseJsons=xhttp.responseText
-                var userResponses= JSON.parse(userResponseJsons)
+                var userJsons=xhttp.responseText;
+                var users= JSON.parse(userJsons);
                 if(xhttp.status==200)
                 {
-                    tableUserHtml = '<tr><th>UserName</th><th>Email</th></tr>'
-                    console.log(userResponses)
-                    for (var i in userResponses)
+                    userTableHtml = '<tr><th>UserName</th><th>Email</th></tr>';
+                    for (var i in users)
                     {
-                        tableUserHtml+='<tr><th>'+userResponses[i]['UserName']+'</th><th>'+userResponses[i]['Email']+'</th></tr>'
+                        userTableHtml+='<tr><th>'+users[i]['UserName']+'</th><th>'+users[i]['Email']+'</th></tr>';
                     }
-                    document.getElementById("TableUsers").innerHTML=tableUserHtml
+                    document.getElementById("TableUsers").innerHTML=userTableHtml;
                 }
                 else
                 {
-                    window.location='/login/'
+                    window.location='/login/';
                 }
             }            
-            xhttp.open("GET", "/api/v1.0/users",false)
-            token = localStorage.getItem("Token")
-            authorization ='Bearer '+token
-            xhttp.setRequestHeader("Authorization",authorization)
-            xhttp.send()
+            xhttp.open("GET", "/api/v1.0/users",false);
+            token = localStorage.getItem("Token");
+            authorization ='Bearer '+token;
+            xhttp.setRequestHeader("Authorization",authorization);
+            xhttp.send();
         }
-        function GetDataTableGroup()
+        function getGroups()
         {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() 
             {
                 if(xhttp.status==403)
                 {
-                    window.location='/login/'
+                    alert('bạn không có quyền truy cập trang này');
                     localStorage.removeItem('Token');
                 }
-                var groupResponseJsons=xhttp.responseText
-                var groupResponses= JSON.parse(groupResponseJsons)
+                var groupJsons=xhttp.responseText;
+                var groups= JSON.parse(groupJsons);
                 if(xhttp.status==200)
                 {
-                    tablegroupHtml = '<tr><th>IdGruop</th><th>GroupName</th></tr>'
+                    groupTableHtml = '<tr><th>IdGruop</th><th>GroupName</th></tr>';
                  
-                    for (var i in groupResponses)
+                    for (var i in groups)
                     {
-                        tablegroupHtml+='<tr><th>'+groupResponses[i]['id']+'</th><th>'+groupResponses[i]['GroupName']+'</th></tr>'
+                        groupTableHtml+='<tr><th>'+groups[i]['id']+'</th><th>'+groups[i]['GroupName']+'</th></tr>';
                     }
-                    document.getElementById("TableGroups").innerHTML=tablegroupHtml
+                    document.getElementById("TableGroups").innerHTML=groupTableHtml;
                 }
                 else
                 {
-                    window.location='/login/'
+                    window.location='/login/';
                 }
             }            
-            xhttp.open("GET", "/api/v1.0/groups",false)
-            token = localStorage.getItem("Token")
+            xhttp.open("GET", "/api/v1.0/groups",false);
+            token = localStorage.getItem("Token");
             authorization ='Bearer '+token
-            xhttp.setRequestHeader("Authorization",authorization)
-            xhttp.send()
+            xhttp.setRequestHeader("Authorization",authorization);
+            xhttp.send();
         }
         function LogOut()
         {
-            window.location="/login/"
+            window.location="/login/";
             localStorage.removeItem('Token');
         }
         
