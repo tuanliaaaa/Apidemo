@@ -6,80 +6,79 @@ from .userModel import User
 from .articlesModel import Articles
 from rest_framework.decorators import APIView
 from django.utils.decorators import method_decorator
-from News.decorators import RoleRequest
-class ArticlesApiGetAll(APIView):
+from .roleRequestDecorator import RoleRequest
+class ArticlesApi(APIView):
     @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def get(self,request):
         articles = Articles.objects.all()
-        articleViewModel = []
+        articleJsons = []
         for article in articles:
             articleJson={'id':article.id,'UserName':article.User.UserName,'Title':article.Title,'Content':article.Content,'Category':article.Category.CategoryName}
-            articleViewModel.append(articleJson)
-        return Response(articleViewModel,status=status.HTTP_200_OK)
+            articleJsons.append(articleJson)
+        return Response(articleJsons,status=status.HTTP_200_OK)
     @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def post(self,request):
-        NewArticles=request.data
-        if  not 'UserName' in NewArticles:
-            return Response({'message':'Trường UserName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
-        if not 'Category'  in NewArticles :
+        newArticle=request.data
+        newArticle['Id']=request.userID
+        if not 'Category'  in newArticle :
             return Response({'message':'Trường Category là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
-        if not 'Content' in NewArticles:
+        if not 'Content' in newArticle:
             return Response({'message':'Trường Content là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
-        if not 'Title' in NewArticles:
+        if not 'Title' in newArticle:
             return Response({'message':'Trường Title là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
         try:
-            UserAriticles = User.objects.get(UserName=NewArticles['UserName'])
+            userAriticles = User.objects.get(pk=newArticle['Id'])
         except:
             return Response({'message':'User này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
         try:
-            CategoryAriticles = Category.objects.get(CategoryName=NewArticles['Category'])
+            CategoryAriticles = Category.objects.get(CategoryName=newArticle['Category'])
         except:
             return Response({'message':'Category này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
-        Article=Articles(User=UserAriticles,Title=NewArticles['Title'],Content=NewArticles['Content'],Category=CategoryAriticles)
-        Article.save()
-        ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
-        return Response(ArticleJson,status=status.HTTP_201_CREATED)
+        article=Articles(User=userAriticles,Title=newArticle['Title'],Content=newArticle['Content'],Category=CategoryAriticles)
+        article.save()
+        articleJson={'id':article.id,'UserName':article.User.UserName,'Title':article.Title,'Content':article.Content,'Category':article.Category.CategoryName}
+        return Response(articleJson,status=status.HTTP_201_CREATED)
 
 class ArticlesApiGetById(APIView):
     @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def get(self,request,id):
         try:
-            Article = Articles.objects.get(pk=id)
+            article = Articles.objects.get(pk=id)
         except:
             return Response({'message':'Article này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
-        ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
-        return Response(ArticleJson,status=status.HTTP_200_OK)
+        articleJson={'id':article.id,'UserName':article.User.UserName,'Title':article.Title,'Content':article.Content,'Category':article.Category.CategoryName}
+        return Response(articleJson,status=status.HTTP_200_OK)
     @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def patch(self,request,id):
         try:
-            Article = Articles.objects.get(pk=id)
+            article = Articles.objects.get(pk=id)
         except:
             return Response({'message':'Article này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
-        UpdateArticles =request.data
-        if 'UserName' in UpdateArticles:
+        updateArticles =request.data
+        if 'UserName' in updateArticles:
             try:
-                Users = User.objects.get(UserName=UpdateArticles['UserName'])
+                user = User.objects.get(UserName=updateArticles['UserName'])
             except:
                 return Response({'message':'User này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
-            Article.User=Users
-        if 'Category'  in UpdateArticles:
+            article.User=user
+        if 'Category'  in updateArticles:
             try:
-                Categories = Category.objects.get(CategoryName=UpdateArticles['Category'])
+                category = Category.objects.get(CategoryName=updateArticles['Category'])
             except:
                 return Response({'message':'User này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
-            Article.Category=Categories
-        if 'Title' in UpdateArticles:
-            Article.Title=UpdateArticles['Title']
-        if 'Content' in UpdateArticles:
-            Article.Content =UpdateArticles['Content']
-        Article.save()
-        ArticleJson={'id':Article.id,'UserName':Article.User.UserName,'Title':Article.Title,'Content':Article.Content,'Category':Article.Category.CategoryName}
-        return Response(ArticleJson,status=status.HTTP_205_RESET_CONTENT)
+            article.Category=category
+        if 'Title' in updateArticles:
+            article.Title=updateArticles['Title']
+        if 'Content' in updateArticles:
+            article.Content =updateArticles['Content']
+        article.save()
+        articleJson={'id':article.id,'UserName':article.User.UserName,'Title':article.Title,'Content':article.Content,'Category':article.Category.CategoryName}
+        return Response(articleJson,status=status.HTTP_205_RESET_CONTENT)
     @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def delete(self,request,id):
         try:
-            Article = Articles.objects.get(pk=id)
+            article = Articles.objects.get(pk=id)
         except:
             return Response({'message':'Article này không tồn tại'},status=status.HTTP_404_NOT_FOUND)
-        Article.delete()
+        article.delete()
         return Response({'massage':'Article đã xóa thành công'},status=status.HTTP_204_NO_CONTENT)
