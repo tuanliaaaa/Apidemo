@@ -1,80 +1,64 @@
 
+from re import I
+from unicodedata import category
+from django.http import HttpResponse
 from rest_framework import status
+from django.http import Http404
 from rest_framework.response import Response
+from .categorySerializer import CategorySerializer
 from .categoryModel import Category
 from datetime import datetime,timedelta,timezone
 from rest_framework.decorators import APIView
 from django.utils.decorators import method_decorator
 from .roleRequestDecorator import RoleRequest
+from rest_framework.parsers import JSONParser
 class CategoriesApiAll(APIView):
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):
-        categories=Category.objects.all()
-        categoryJsons=[]
-        for category in categories:
-            categoryJson={'id':category.id,'CategoryName':category.CategoryName}
-            categoryJsons.append(categoryJson)
-        return Response(categoryJsons,status=status.HTTP_200_OK)
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+        categories = Category.objects.all()
+        categorySerializer = CategorySerializer(categories,many=True)
+        return Response(categorySerializer.data,status=status.HTTP_200_OK)
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def post(self,request):
-        newCategory =request.data
-        if not 'CategoryName' in newCategory:
-            return Response({'message':'Trường CategoryName là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
-        if not 'CategoryCodeParent' in newCategory:
-            return Response({'message':'Trường CategoryCodeParent là bắt buộc'},status=status.HTTP_400_BAD_REQUEST)
-        else:
-            if not isinstance(newCategory['CategoryCodeParent'], int):
-                return Response({'message':'Trường CategoryCodeParent là số nguyên vui lòng nhập lại'},status=status.HTTP_400_BAD_REQUEST)
-            else:
-                if newCategory['CategoryCodeParent'] < 0:
-                    return Response({'message':'Trường CategoryCodeParent là số nguyên lớn hơn 0 vui lòng nhập lại'},status=status.HTTP_400_BAD_REQUEST)
-        category = Category(CategoryName=newCategory['CategoryName'],CategoryCodeParent=newCategory['CategoryCodeParent'])
-        category.save()
-        categoryJson={'id':category.id,'CategoryName':category.CategoryName}
-        return Response(categoryJson,status=status.HTTP_201_CREATED)
+        category = JSONParser().parse(request)
+        categorySerializer = CategorySerializer(data=category)
+        if categorySerializer.is_valid():
+            categorySerializer.save()
+            return Response(categorySerializer.data, status=201)
+        return Response(categorySerializer.errors, status=400)
 class CategoriesApiByid(APIView):
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    def get_category(self, pk):
+        try:
+            return Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            raise Http404
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
-        try:
-            category =Category.objects.get(pk=id)
-        except:
-            return Response({'massage':'Categorie này không tồn tại'})
-        categoyJson={'id':category.id,'CategoryName':category.CategoryName}
-        return Response(categoyJson,status=status.HTTP_200_OK)
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+        category = self.get_category(id)
+        categorySerializer = CategorySerializer(category)
+        return Response(categorySerializer.data,status=status.HTTP_200_OK)
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def patch(self,request,id):
-        try:
-            category =Category.objects.get(pk=id)
-        except:
-            return Response({'massage':'Categorie này không tồn tại'})
-        updateCategory =request.data
-        if 'CategoryName' in updateCategory:
-            category.CategoryName = updateCategory['CategoryName']
-        if 'CategoryCodeParent' in updateCategory:
-            category.CategoryCodeParent= updateCategory['CategoryCodeParent']
-        category.save()
-        categoryJson={'id':category.id,'CategoryName':category.CategoryName}
-        return Response(categoryJson,status=status.HTTP_205_RESET_CONTENT)
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+        category=self.get_category(id)
+        categoryUpdate = JSONParser().parse(request)
+        categoryUpdateserializer = CategorySerializer(category, data=categoryUpdate,partial=True)
+        if categoryUpdateserializer.is_valid():
+            categoryUpdateserializer.save()
+            return Response(categoryUpdateserializer.data,status=200)
+        return Response(categoryUpdateserializer.errors, status=400)
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def delete(self,request,id):
-        try:
-            category =Category.objects.get(pk=id)
-        except:
-            return Response({'massage':'Categorie này không tồn tại'})
+        category = self.get_category(id)
         category.delete()
         return Response({'massage':'Categorie đã xóa thành công'},status=status.HTTP_204_NO_CONTENT)
-
 class CategoriesViewChilden(APIView):
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
         categories = Category.objects.filter(CategoryCodeParent=id)
-        categoryJsons=[]
-        for categorie in categories:
-            categoryJson={'id':categorie.id,'CategoryName':categorie.CategoryName}
-            categoryJsons.append(categoryJson)
-        return Response(categoryJsons,status=status.HTTP_200_OK)
+        categorySerializer =CategorySerializer(categories,many=True)
+        return Response(categorySerializer.data,status=status.HTTP_200_OK)
 class CategoriesViewParent(APIView):
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
         categoriesParent = []
         categoryCodeParentNow = Category.objects.get(pk=id).CategoryCodeParent
