@@ -57,9 +57,8 @@
         </div>
     </container>
     <script>
-        if (localStorage.getItem("Token"))
+        if (localStorage.getItem("Token") && checkAuthor())
         {
-            checkAuthor();
             getUsers();
             getGroups();
         }
@@ -73,8 +72,7 @@
             xhttp.onload = function() 
             {
                 if(xhttp.status==403)
-                {
-                    alert('bạn không có quyền truy cập trang này');
+                {    
                     localStorage.removeItem('Token');
                 }
                 var userJson=xhttp.responseText;
@@ -100,6 +98,7 @@
             authorizationHeader ='Bearer '+token;
             xhttp.setRequestHeader("Authorization",authorizationHeader);
             xhttp.send();
+            return true
         }
         function getUsers()
         {
@@ -108,8 +107,8 @@
             {
                 if(xhttp.status==403)
                 {
-                    alert('bạn không có quyền truy cập trang này');
-                    localStorage.removeItem('Token');
+                    
+                    document.getElementById('TableUsers').innerHTML='<h1>bạn không có quyền lấy thông tin của các User<h1>'  
                 }
                 var userJsons=xhttp.responseText;
                 var users= JSON.parse(userJsons);
@@ -122,10 +121,7 @@
                     }
                     document.getElementById("TableUsers").innerHTML=userTableHtml;
                 }
-                else
-                {
-                    window.location='/login/';
-                }
+                
             }            
             xhttp.open("GET", "/api/v1.0/users",false);
             token = localStorage.getItem("Token");
@@ -140,8 +136,7 @@
             {
                 if(xhttp.status==403)
                 {
-                    alert('bạn không có quyền truy cập trang này');
-                    localStorage.removeItem('Token');
+                    document.getElementById('TableGroups').innerHTML='<h1>bạn không có quyền lấy thông tin của các User<h1>'
                 }
                 var groupJsons=xhttp.responseText;
                 var groups= JSON.parse(groupJsons);
@@ -154,10 +149,6 @@
                         groupTableHtml+='<tr><th>'+groups[i]['id']+'</th><th>'+groups[i]['GroupName']+'</th></tr>';
                     }
                     document.getElementById("TableGroups").innerHTML=groupTableHtml;
-                }
-                else
-                {
-                    window.location='/login/';
                 }
             }            
             xhttp.open("GET", "/api/v1.0/groups",false);

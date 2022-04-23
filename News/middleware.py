@@ -15,9 +15,7 @@ class AuthorizationMiddleware:
                 payLoad=jwt.decode(jwtTokenPayload, key, algorithms=["HS256"])
                 request.groupNames=payLoad['Group']
                 request.userID=payLoad['UserID']
-               
             except:
-                a=json.loads('{"message":"Token đã hết hạn"}')
-                return HttpResponse(a,status =status.HTTP_403_FORBIDDEN)
+                return HttpResponse('{"message":"Token đã hết hạn"}',status =status.HTTP_403_FORBIDDEN)
         response = self.get_response(request)
         return response

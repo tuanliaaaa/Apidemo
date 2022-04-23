@@ -21,7 +21,7 @@ class UserInformationByToken(APIView):
         userSerializer = UserSerializer(user)
         return Response(userSerializer.data,status=status.HTTP_200_OK)
 class UserApiGetAll(APIView):  
-    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):   
         users = User.objects.all()
         userSerializers = UserSerializer(users,many=True)
