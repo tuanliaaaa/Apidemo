@@ -10,13 +10,18 @@ from .articlesSerializer import ArticlesSerializer
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField(required=False) 
     UserName = serializers.CharField(max_length=200)
-    Age = serializers.IntegerField()
+    Age = serializers.IntegerField(required=False)
     Email = serializers.EmailField()
     Password = serializers.CharField()
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret.pop('Password',None)
         return ret
+    def validate(self, data):
+        try:
+            User.objects.get(UserName=data['UserName'])
+        except:
+            raise serializers.ValidationError("User đã tồn tại")
     def create(self, validated_data):
         return User.objects.create(**validated_data)
     def update(self, instance, validated_data):

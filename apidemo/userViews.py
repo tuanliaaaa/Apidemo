@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from django.utils.decorators import method_decorator
 from .userSerializer import UserSerializer
 from json import loads
+from django.views.decorators.csrf import csrf_exempt
 from django.http import Http404
 from rest_framework.parsers import JSONParser
 class UserInformationByToken(APIView):
@@ -21,12 +22,13 @@ class UserInformationByToken(APIView):
         userSerializer = UserSerializer(user)
         return Response(userSerializer.data,status=status.HTTP_200_OK)
 class UserApiGetAll(APIView):  
-    @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request):   
         users = User.objects.all()
         userSerializers = UserSerializer(users,many=True)
         return Response(userSerializers.data,status=status.HTTP_200_OK)
     # @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    @csrf_exempt
     def post(self,request):
         user = JSONParser().parse(request)
         userSerializer = UserSerializer(data=user)

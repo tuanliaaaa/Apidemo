@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'signup.css' %}">
+</head>
+<body>
+    <div class="main" id="main">
+        <div class="container">
+            <div class="container__header">
+                <div class="container__header__title">
+                    <h1 class="header__title__content" >
+                        Sign Up
+                    </h1>
+                </div>
+            </div>
+            <div class="container__body">
+                <div class="container__body__form">
+                    <div class="body__form__content">
+                        <div class="form__content__text">
+                            <label for="Username">Username</label>
+                            <input id="Username" type="text" onkeyup="SignUpByEnter()">
+                        </div>
+                        <div class="form__content__text">
+                            <label for="Password">Password</label>
+                            <input id="Password" type="password" onkeyup="SignUpByEnter()">
+                        </div>
+                        <div class="form__content__text">
+                            <label for="ConfirmPassword">Confirm Password</label>
+                            <input id="ConfirmPassword" type="password" onkeyup="SignUpByEnter()">
+                        </div>
+                        <div class="form__content__text">
+                            <label for="Email">Email</label>
+                            <input id="Email" type="text" onkeyup="SignUpByEnter()">
+                        </div>
+                        <div id="form__content__text__error">
+                            <label id="error"></label>
+                        </div>
+                    </div>
+                    <div class="body__form__button">
+                        <input type="button" value="Sign Up" onclick="SignUp()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function SignUpByEnter()
+        {
+            if(event.keyCode==13)
+            {
+                SignUp();
+            }
+        }
+        function SignUp()
+        {
+            function getCookie(name) 
+            {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') 
+                {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) 
+                    {
+                        var cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) 
+                        {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            password=document.getElementById("Password").value;
+            confirmPassword =document.getElementById("ConfirmPassword").value;
+            if(password!=confirmPassword)
+            {
+                document.getElementById("error").innerText='password and confirmPassword are not same';
+                document.getElementById("form__content__text__error").style="display:block";
+            }
+            else
+            {
+                var csrfToken = getCookie('csrftoken');
+                const xhttp = new XMLHttpRequest();
+                xhttp.onload = function() 
+                {
+                    var tokenResponseJson=xhttp.responseText
+                    var tokenResponse= JSON.parse(tokenResponseJson)
+                    if(xhttp.status==200)
+                    {
+                        window.location='/login';
+                    }
+                    else
+                    {
+                        
+                        document.getElementById("error").innerText=tokenResponse[Object.keys(tokenResponse)[0]]
+                        document.getElementById("form__content__text__error").style="display:block";
+                    }
+                }         
+                const userInfo={
+                    UserName:document.getElementById("Username").value,
+                    Password:document.getElementById("Password").value,
+                    Email:document.getElementById("Email").value
+                }
+                postData=JSON.stringify(userInfo)
+                xhttp.open("POST", "http://127.0.0.1:8000/api/v1.0/users",false);
+                xhttp.setRequestHeader("Content-type","application/json")
+                xhttp.setRequestHeader("X-CSRFToken", csrfToken);
+                xhttp.send(postData)
+            }
+        }
+    </script>
+</body>
+</html>
