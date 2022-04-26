@@ -30,7 +30,7 @@ class UserApiGetAll(APIView):
     # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     @csrf_exempt
     def post(self,request):
-        user = JSONParser().parse(request)
+        user= request.data    
         userSerializer = UserSerializer(data=user)
         if userSerializer.is_valid():
             userSerializer.save()
@@ -45,7 +45,6 @@ class UserApiGetById(APIView):
     # @method_decorator(RoleRequest(allowedRoles=['admin',]))
     def get(self,request,id):
         user = self.get_user(id)
-        print('dax vasldfa')
         userSerializer = UserSerializer(user)
         return Response(userSerializer.data,status=status.HTTP_200_OK)
     # @method_decorator(RoleRequest(allowedRoles=['admin',]))

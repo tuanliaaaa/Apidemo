@@ -1,3 +1,4 @@
+import errno
 from re import T
 from wsgiref import validate
 from django.forms import ValidationError
@@ -18,10 +19,16 @@ class UserSerializer(serializers.Serializer):
         ret.pop('Password',None)
         return ret
     def validate(self, data):
+        error=False
         try:
-            User.objects.get(UserName=data['UserName'])
+            user = User.objects.get(UserName=data['UserName']) 
+            error=True
         except:
-            raise serializers.ValidationError("User đã tồn tại")
+            error= False
+        finally:
+            if(error):
+                raise serializers.ValidationError("User đã tồn tại")
+        return data
     def create(self, validated_data):
         return User.objects.create(**validated_data)
     def update(self, instance, validated_data):

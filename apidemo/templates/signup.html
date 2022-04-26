@@ -92,13 +92,12 @@
                 {
                     var tokenResponseJson=xhttp.responseText
                     var tokenResponse= JSON.parse(tokenResponseJson)
-                    if(xhttp.status==200)
+                    if(xhttp.status==201)
                     {
                         window.location='/login';
                     }
                     else
                     {
-                        
                         document.getElementById("error").innerText=tokenResponse[Object.keys(tokenResponse)[0]]
                         document.getElementById("form__content__text__error").style="display:block";
                     }
@@ -109,9 +108,10 @@
                     Email:document.getElementById("Email").value
                 }
                 postData=JSON.stringify(userInfo)
-                xhttp.open("POST", "http://127.0.0.1:8000/api/v1.0/users",false);
+                xhttp.open("POST", "/api/v1.0/users",false);
                 xhttp.setRequestHeader("Content-type","application/json")
                 xhttp.setRequestHeader("X-CSRFToken", csrfToken);
+                console.log(postData)
                 xhttp.send(postData)
             }
         }
