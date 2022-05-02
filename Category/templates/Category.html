@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'Category.css' %}">
+</head>
+<body>
+    <header id="header">
+        <div class="header__navbar">
+            <div class="header__navbar__list">
+                <a href="/home">Home</a>
+            </div>
+            <div class="header__navbar__list">
+                <a href="/Category">Category</a>
+            </div>
+            <div class="header__navbar__logout">
+                <a  href='#' onclick="LogOut()">LogOut</a>
+            </div>
+        </div>
+    </header>
+    <container id="container">
+        <div class="container__treemap">
+            <ul class="todos" id="todos">
+
+            </ul>
+        </div>
+        <div class="container__content">
+
+        </div>
+    </container>
+<script>
+    if (localStorage.getItem("Token") && checkAuthor())
+    {
+        getCategories();
+    }
+    else
+    {
+        window.location='/login/';
+    }
+    function checkAuthor()
+    {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function() 
+        {
+            if(xhttp.status==403)
+            {    
+                localStorage.removeItem('Token');
+            }
+            var userJson=xhttp.responseText;
+            var user= JSON.parse(userJson);
+            
+            if(xhttp.status==200)
+            {
+                return true
+
+            }
+            else 
+            {  
+                window.location='/login/';
+            }
+        }            
+        xhttp.open("GET", "/api/v1.0/user",false);
+        token = localStorage.getItem("Token");
+        authorizationHeader ='Bearer '+token;
+        xhttp.setRequestHeader("Authorization",authorizationHeader);
+        xhttp.send();
+        return true
+    }
+    function getCategories()
+        {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                if(xhttp.status==403)
+                {
+                    document.getElementById('TableUsers').innerHTML='<h1>bạn không có quyền lấy thông tin của Categories<h1>';
+                }
+                var categoyJsons=xhttp.responseText;
+                var categories= JSON.parse(categoyJsons);
+                if(xhttp.status==200)
+                {
+                    todos=document.getElementById('todos');
+                    treeViewCategories(categories,todos);
+                }
+                
+            }            
+            xhttp.open("GET", "/api/v1.0/categories/treeview",false);
+            token = localStorage.getItem("Token");
+            authorization ='Bearer '+token;
+            xhttp.setRequestHeader("Authorization",authorization);
+            xhttp.send();
+        }
+    function treeViewCategories(Category,element)
+    {   
+        for(var i=0;i<Category.length;i++)
+        {
+            if(Category[i]['parent'])
+            {           
+                element.innerHTML+='<li><div class="toggler">'+Category[i]['name']+'</div><ul class="toggler-target"></ul>';
+                treeViewCategories(Category[i]['parent'],element.children[i].children[1]);
+            }
+            else
+            {
+                element.innerHTML+='<li class="todo">'+Category[i]['name']+'</li>';
+            }
+        }
+    }
+
+    
+    const togglers = document.querySelectorAll(".toggler");
+    togglers.forEach(function(toggler) {
+    toggler.addEventListener("click", function() 
+    {
+        toggler.classList.toggle("active");
+        toggler.nextElementSibling.classList.toggle("active");
+    });
+    });
+</script>
+</body>
+</html>

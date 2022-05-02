@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'apidemo.apps.ApidemoConfig',
     'rest_framework',
     'Home.apps.HomeConfig',
+    'Category',
 ]
 
 MIDDLEWARE = [

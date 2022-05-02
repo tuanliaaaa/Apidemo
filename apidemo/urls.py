@@ -2,7 +2,7 @@
 from django.urls import  path
 from .userViews import  UserApiGetAll, UserApiGetById,UserInformationByToken
 from .articlesViews import ArticlesApi,ArticlesApiGetById
-from .categoryViews import CategoriesViewChilden,CategoriesApiAll,CategoriesApiByid,CategoriesViewParent
+from .categoryViews import CategoriesViewChilden,CategoriesApiAll,CategoriesApiByid,CategoriesViewParent, CatrgoriesTreeView
 from .tokenViews import TokenApi
 from .groupViews import GroupsApiAll
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('articles',ArticlesApi.as_view()),
     path('articles/<int:id>',ArticlesApiGetById.as_view()),
     path('categories',CategoriesApiAll.as_view()),
+    path('categories/treeview',CatrgoriesTreeView.as_view()),
     path('categories/<int:id>',CategoriesApiByid.as_view()),
     path('categories/<int:id>/children',CategoriesViewChilden.as_view()),
     path('categories/<int:id>/ancestors',CategoriesViewParent.as_view()),

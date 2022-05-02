@@ -73,3 +73,18 @@ class CategoriesViewParent(APIView):
             ListCategoriesParent(categoryJson['id'])
             return Response(ListCategoriesParent,status=status.HTTP_200_OK)
         return Response({'message':'Không có tập cha  nào cả'})
+class CatrgoriesTreeView(APIView):
+    def get(self,request):
+        categories = Category.objects.filter(CategoryCodeParent=0)
+        listCategory=[]
+        def categoriesRelation(categories,listparent):
+            for category in categories:            
+                childrenCategory= Category.objects.filter(CategoryCodeParent=category.pk)
+                if(childrenCategory):
+                    parent=[]
+                    listparent.append({"name":category.CategoryName,"parent":parent})
+                    categoriesRelation(childrenCategory,parent)
+                else:
+                    listparent.append({"name":category.CategoryName})
+        categoriesRelation(categories,listCategory)
+        return Response(listCategory,status=200)
