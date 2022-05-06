@@ -45,6 +45,8 @@
     width: 20%;
     border-right: 4px solid #417690;
     height: 550px;
+    display: inline-block;
+   
 }
 ul
 {
@@ -83,4 +85,21 @@ ul
 #container .container__content
 {
     width: 80%;
+    float: right;
+}
+.container__content .table__articles
+{
+    width: 500px;
+    margin: auto;
+}
+.table__articles #TableArticles
+{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 20px;
+}
+.table__articles table,th,td
+{
+    border: 2px solid #417690;
 }

@@ -29,9 +29,15 @@
             </ul>
         </div>
         <div class="container__content">
-
+            <div class="table__articles">
+                <table id="TableArticles">
+                    
+                </table>
+               
+            </div>
         </div>
     </container>
+
 <script>
     if (localStorage.getItem("Token") && checkAuthor())
     {
@@ -112,13 +118,58 @@
 
     
     const togglers = document.querySelectorAll(".toggler");
-    togglers.forEach(function(toggler) {
-    toggler.addEventListener("click", function() 
+    const todo= document.querySelectorAll(".todo");
+    todo.forEach(function(Category)
     {
+        Category.addEventListener("click",function()
+        {
+            getArticlesByCategory(Category.innerHTML); 
+        } 
+        )
+    }
+    )
+    function getArticlesByCategory(category)
+        {
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                if(xhttp.status==403)
+                {
+                    document.getElementById('TableUsers').innerHTML='<h1>bạn không có quyền lấy thông tin của Categories<h1>';
+                }
+                var articleJsons=xhttp.responseText;
+                var articles= JSON.parse(articleJsons);
+                if(xhttp.status==200)
+                {
+                    articlesTableHtml = '<tr><th>Title</th><th>Content</th></tr>';
+                    for (var i in articles)
+                    {
+                        articlesTableHtml+='<tr><th>'+articles[i]['Title']+'</th><th>'+articles[i]['Content']+'</th></tr>';
+                    }
+                    document.getElementById("TableArticles").innerHTML=articlesTableHtml;
+                }
+                
+            }            
+            url='/api/v1.0/articles/'+category;
+            xhttp.open("GET", url,false);
+            token = localStorage.getItem("Token");
+            authorization ='Bearer '+token;
+            xhttp.setRequestHeader("Authorization",authorization);
+            xhttp.send();
+        }
+    togglers.forEach(function(toggler) 
+    {
+    toggler.addEventListener("click", function() 
+        {
         toggler.classList.toggle("active");
         toggler.nextElementSibling.classList.toggle("active");
+        });
     });
-    });
+    function LogOut()
+        {
+            window.location="/login/";
+            localStorage.removeItem('Token');
+        }
 </script>
 </body>
 </html>

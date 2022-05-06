@@ -50,3 +50,8 @@ class ArticlesApiGetById(APIView):
         article = self.get_article(id)
         article.delete()
         return Response({'massage':'Article đã xóa thành công'},status=status.HTTP_204_NO_CONTENT)
+class ArticlesByCategory(APIView):
+    def get(self,request,category):
+        ariticles = Articles.objects.filter(Category__CategoryName=category)
+        ariticlesSerializer=ArticlesSerializer(ariticles,many=True)
+        return Response(ariticlesSerializer.data,status=200)

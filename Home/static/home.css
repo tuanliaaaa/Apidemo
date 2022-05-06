@@ -5,7 +5,10 @@ box-sizing: border-box;
 }
 #header
 {
-
+    position: fixed;
+    top:0;
+    left: 0;
+    right: 0;
 }
 #header .header__navbar
 {
@@ -38,12 +41,13 @@ box-sizing: border-box;
 
 #container
 {
-
+    
 }
 #container .container__body
 {
     max-width: 800px;
     margin: 20px auto ;
+    margin-top: 80px;
 }
 .container__body .container__body__inforuser
 {
@@ -111,6 +115,11 @@ box-sizing: border-box;
     text-align: center;
     margin-bottom: 10px;
 }
+th i
+{
+    float: right;
+    cursor: pointer;
+}
 table .main__table__content
 {
     
@@ -124,4 +133,86 @@ table .main__table__content
 .table__groupuser table 
 {
 
+}
+#modal
+{
+    position: fixed;
+    top:48px;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.4)
+}
+#modal .modal__container
+{
+    background-color: #fff;
+    width: 300px;
+    min-height: 200px;
+    border: solid 1px #ccc;
+    box-shadow:  5px 5px 5px #417690;
+    border-radius: 5px;
+}
+.modal__container .modal__container__close
+{
+    
+}
+.modal__container__close i
+{
+    float:right;
+    cursor: pointer;
+    font-size: 20px;
+}
+.modal__container__close:hover i
+{
+    background-color: #DF0029;
+}
+.modal__container .model__container__UserName
+{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.model__container__UserName h3
+{
+    text-align: center;
+}
+.modal__container .modal__container__selectegroup
+{
+    display: flex;
+    flex-wrap: wrap;
+}
+.modal__container__selectegroup .selectedgroup__button
+{
+    width: 22%;
+    margin: auto;
+    margin-bottom: 20px;
+}
+.modal__container .modal__container__buttongroup
+{
+    display: flex;
+    margin-top: 30px;
+    
+}
+.modal__container__buttongroup input
+{
+    margin: auto;
+    min-height: 20px;
+    min-width: 50px;
+    background-color: #417690;
+    border:none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.7;
+    color: white;
+    
+}
+.modal__container__buttongroup:hover input
+{
+    opacity: 1;
+}
+#modal.js-changegroup
+{
+    display: flex;
 }

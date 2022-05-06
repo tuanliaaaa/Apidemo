@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
 </head>
 <body>
     <header id="header">
@@ -62,11 +64,29 @@
             </div>
         </div>
     </container>
+    <div id="modal" onclick="CloseChangeGroup()">
+        <div class="modal__container">
+            <div class="modal__container__close">
+                <i class="far fa-window-close" onclick="CloseChangeGroup()"></i>
+            </div>
+            <div class="model__container__UserName">
+                <h3>UserName:<span></span></h3>
+            </div> 
+            <div class="modal__container__selectegroup">
+                
+            </div>
+            <div class="modal__container__buttongroup">
+                <input type="button" value="OK" onclick="ChangeGroup()">
+            </div>
+        </div>
+    </div>
     <script>
+        var listGroup;
+        var listGroupOfUser; 
         if (localStorage.getItem("Token") && checkAuthor())
         {
-            getUsers();
-            getGroups();
+            getUserGroups();
+            getGroups();   
         }
         else
         {
@@ -106,7 +126,7 @@
             xhttp.send();
             return true
         }
-        function getUsers()
+        function getUserGroups()
         {
             const xhttp = new XMLHttpRequest();
             xhttp.onload = function() 
@@ -116,20 +136,21 @@
                     
                     document.getElementById('TableUsers').innerHTML='<h1>bạn không có quyền lấy thông tin của các User<h1>'  
                 }
-                var userJsons=xhttp.responseText;
-                var users= JSON.parse(userJsons);
+                var userGroupJsons=xhttp.responseText;
+                var userGroups= JSON.parse(userGroupJsons);
+                listGroupOfUser=userGroups
                 if(xhttp.status==200)
                 {
-                    userTableHtml = '<tr><th>UserName</th><th>Email</th></tr>';
-                    for (var i in users)
+                    userTableHtml = '<tr><th>UserName</th><th>Group</th></tr>';
+                    for (var i in userGroups)
                     {
-                        userTableHtml+='<tr><th>'+users[i]['UserName']+'</th><th>'+users[i]['Email']+'</th></tr>';
+                        userTableHtml+='<tr><th>'+userGroups[i]['UserName']+'</th><th>'+String(userGroups[i]['ListGroup'])+'<i class="fas fa-edit" ></i>'+'</th></tr>';
                     }
                     document.getElementById("TableUsers").innerHTML=userTableHtml;
                 }
                 
             }            
-            xhttp.open("GET", "/api/v1.0/users",false);
+            xhttp.open("GET", "/api/v1.0/userandgroupuser",false);
             token = localStorage.getItem("Token");
             authorization ='Bearer '+token;
             xhttp.setRequestHeader("Authorization",authorization);
@@ -146,6 +167,7 @@
                 }
                 var groupJsons=xhttp.responseText;
                 var groups= JSON.parse(groupJsons);
+                listGroup=groups;
                 if(xhttp.status==200)
                 {
                     groupTableHtml = '<tr><th>IdGruop</th><th>GroupName</th></tr>';
@@ -168,7 +190,122 @@
             window.location="/login/";
             localStorage.removeItem('Token');
         }
-        
+        modal = document.querySelector('#modal')
+        modalContainer= document.querySelector('.modal__container')
+        function editGroupforUser(groups)
+        {
+            modal.classList.add('js-changegroup');
+            GetDataEditGroup(groups);
+        }
+        function CloseChangeGroup()
+        {
+            modal.classList.remove('js-changegroup');
+        }
+        modalContainer.addEventListener('click',function(event)
+        {
+            event.stopPropagation();
+        })
+        var iconchange;
+        icon=document.querySelectorAll('.fas.fa-edit');
+        icon.forEach(function(element){
+            element.addEventListener("click",function()
+            {
+                iconchange=element;
+                editGroupforUser(element.parentElement.parentElement.children[1].innerText);
+                userNameEditGroup = document.querySelector('.model__container__UserName h3 span').innerHTML=element.parentElement.parentElement.children[0].innerText;
+            }
+
+            )
+        })
+        function GetDataEditGroup(groups)
+        {
+            
+            modalContainerSelectegroup=document.querySelector('.modal__container__selectegroup');
+            groupArray=groups.split(',');
+            modalContainerSelectegroupHtml=''
+            for(var i in listGroup)
+            {
+
+                if( groupArray.includes(listGroup[i]['GroupName']))
+                {
+                    modalContainerSelectegroupHtml+='<div class="selectedgroup__button"><input type="checkbox" id='+ listGroup[i]['GroupName']+' value='+ listGroup[i]['GroupName']+' checked ><label for='+listGroup[i]['GroupName']+'>'+listGroup[i]['GroupName']+'</label></div>';
+                }
+                else
+                {
+                    modalContainerSelectegroupHtml+='<div class="selectedgroup__button"><input type="checkbox" id='+ listGroup[i]['GroupName']+' value='+ listGroup[i]['GroupName']+'><label for='+listGroup[i]['GroupName']+'>'+listGroup[i]['GroupName']+'</label></div>';
+                }
+            }
+            modalContainerSelectegroup.innerHTML=modalContainerSelectegroupHtml;
+        }   
+        function ChangeGroup()
+        {
+            checkGroups=document.querySelectorAll(".selectedgroup__button input");
+            groups=[]
+            checkGroups.forEach(function(element)
+            {
+                if(element.checked)
+                {
+                    groups.push(element.value)
+                }
+            })
+
+            function getCookie(name) 
+            {
+                var cookieValue = null;
+                if (document.cookie && document.cookie !== '') 
+                {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) 
+                    {
+                        var cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) 
+                        {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrfToken = getCookie('csrftoken');
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function() 
+            {
+                var userGroupResponseJson=xhttp.responseText;
+                var userGroups= JSON.parse(userGroupResponseJson);
+                if(xhttp.status==200)
+                {
+                    modal.classList.remove('js-changegroup');
+                    iconchange.parentElement.parentElement.children[1].innerHTML=String(userGroups['ListGroup'])+'<i class="fas fa-edit"></i>'
+                    icon=document.querySelectorAll('.fas.fa-edit');
+        icon.forEach(function(element){
+            element.addEventListener("click",function()
+            {
+                iconchange=element;
+                editGroupforUser(element.parentElement.parentElement.children[1].innerText);
+                userNameEditGroup = document.querySelector('.model__container__UserName h3 span').innerHTML=element.parentElement.parentElement.children[0].innerText;
+            }
+
+            )
+        })
+                }
+                else
+                {
+                    
+                }
+            }         
+            const userGroupInfo={
+                UserName:document.querySelector('.model__container__UserName h3 span').innerHTML,
+                ListGroup:groups
+            }
+            postData=JSON.stringify(userGroupInfo)
+            xhttp.open("POST", "/api/v1.0/userandgroupuser",false);
+            xhttp.setRequestHeader("Content-type","application/json")
+            xhttp.setRequestHeader("X-CSRFToken", csrfToken);
+            xhttp.send(postData)
+        }
     </script>
 </body>
 </html>
