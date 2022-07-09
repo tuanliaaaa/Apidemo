@@ -36,6 +36,9 @@
                     <div class="body__form__button">
                         <input type="button" value="Log in" onclick=" login()">
                     </div>
+                    <div class="form__signup">
+                        <a href="http://127.0.0.1:8000/signup/">Signup</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,7 +102,6 @@
             postData=JSON.stringify(userInfo)
             xhttp.open("POST", "/api/v1.0/api/token/",false);
             xhttp.setRequestHeader("Content-type","application/json")
-
             xhttp.setRequestHeader("X-CSRFToken", csrfToken);
             xhttp.send(postData)
         }

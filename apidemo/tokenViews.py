@@ -21,7 +21,7 @@ class TokenApi(APIView):
         if 'PassWord' not in userRequestToken or not userRequestToken['PassWord']:
             return Response({"message":"Vui lòng nhập Password"},status=status.HTTP_400_BAD_REQUEST)
         try:
-            user= User.objects.get(UserName=userRequestToken['UserName'],PassWord=userRequestToken['PassWord'])
+            user= User.objects.get(UserName=userRequestToken['UserName'],Password=userRequestToken['PassWord'])
         except:      
             return Response({"message":"User này không tồn tại"},status=status.HTTP_404_NOT_FOUND)
         groups=[]

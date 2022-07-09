@@ -1,0 +1,105 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box; 
+}
+#header
+{
+
+}
+#header .header__navbar
+{
+    height: 48px;
+    background-color: #417690;
+
+}
+.header__navbar .header__navbar__list
+{
+    float:left;
+    line-height: 48px;
+}
+.header__navbar__list a
+{
+    color: white;
+    margin: 20px;
+}
+#header .header__navbar__logout
+{
+    float: right;
+    line-height: 48px;
+}
+.header__navbar__logout a
+{
+    color: white;
+    margin-right: 20px;
+}
+
+/*-------------------Container----------------*/
+
+#container
+{
+    
+}
+#container .container__treemap
+{
+    width: 20%;
+    border-right: 4px solid #417690;
+    height: 550px;
+    display: inline-block;
+   
+}
+ul
+{
+    list-style-type: none;
+}
+  
+.container__treemap .todos
+{
+    cursor: pointer;
+}
+.container__treemap .toggler::before
+{
+    content: "\25F6";
+    display: inline-block;
+    margin-right: 0.5rem;
+    transition: transform 0.3s ease-in-out;
+}
+  
+.container__treemap .toggler.active::before 
+{
+    transform: rotate(90deg);
+    content: "\25F7";
+}
+  
+.container__treemap .toggler-target 
+{
+    display: none;
+    margin-left: 20px;
+}
+  
+.container__treemap .toggler-target.active 
+{
+    display: block;
+
+}
+#container .container__content
+{
+    width: 80%;
+    float: right;
+}
+.container__content .table__articles
+{
+    width: 500px;
+    margin: auto;
+}
+.table__articles #TableArticles
+{
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 20px;
+}
+.table__articles table,th,td
+{
+    border: 2px solid #417690;
+}

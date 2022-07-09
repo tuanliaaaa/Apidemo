@@ -2,7 +2,9 @@ from ast import Pass
 from django.db import models
 class User(models.Model):
     UserName = models.CharField(max_length=200)
-    Age = models.IntegerField()
+    Age = models.IntegerField(null=True)
     Email = models.EmailField()
-    PassWord = models.CharField(max_length=100)
+    Password = models.CharField(max_length=100)
     
+    def __str__(self):
+        return self.UserName
