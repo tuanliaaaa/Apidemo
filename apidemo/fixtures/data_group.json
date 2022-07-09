@@ -1,0 +1,9 @@
+[
+    {
+        "model":"apidemo.Group",
+        "pk":1,
+        "fields":{
+            "GroupName":"Admin"
+        }
+    }
+]

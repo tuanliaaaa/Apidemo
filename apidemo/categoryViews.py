@@ -13,7 +13,7 @@ from django.utils.decorators import method_decorator
 from .roleRequestDecorator import RoleRequest
 from rest_framework.parsers import JSONParser
 class CategoriesApiAll(APIView):
-    # @method_decorator(RoleRequest(allowedRoles=['admin',]))
+    @method_decorator(RoleRequest(allowedRoles=['Admin',]))
     def get(self,request):
         categories = Category.objects.all()
         categorySerializer = CategorySerializer(categories,many=True)

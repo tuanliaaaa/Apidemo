@@ -1,0 +1,18 @@
+[
+    {
+        "model":"apidemo.Category",
+        "pk":1,
+        "fields":{
+            "CategoryName":"IT",
+            "CategoryCodeParent":0
+        }
+    },
+    {
+        "model":"apidemo.Category",
+        "pk":2,
+        "fields":{
+            "CategoryName":"Market",
+            "CategoryCodeParent":0
+        }
+    }
+]

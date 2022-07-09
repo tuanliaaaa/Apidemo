@@ -1,0 +1,10 @@
+[
+    {
+        "model":"apidemo.GroupUser",
+        "pk":1,
+        "fields":{
+            "Group":1,
+            "User":1
+        }
+    }
+]
