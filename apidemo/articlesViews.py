@@ -12,12 +12,12 @@ from .roleRequestDecorator import RoleRequest
 from .articlesSerializer import ArticlesSerializer
 from rest_framework.parsers import JSONParser
 class ArticlesApi(APIView):
-    # @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
+    @method_decorator(RoleRequest(allowedRoles=['Admin','Editor']))
     def get(self,request):
         articles = Articles.objects.all()
         articleSerializers =ArticlesSerializer(articles,many=True)
         return Response(articleSerializers.data,status=status.HTTP_200_OK)
-    # @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
+    # @method_decorator(RoleRequest(allowedRoles=['Admin','Editor']))
     def post(self,request):
         articles = JSONParser().parse(request)
         articleSerializer = ArticlesSerializer(data=articles)
@@ -43,7 +43,7 @@ class ArticlesApiGetById(APIView):
         articleUpdateSerializer = ArticlesSerializer(article,articleUpdate,partial=True)
         if articleUpdateSerializer.is_valid():
             articleUpdateSerializer.save()
-            return Response(articleUpdateSerializer.data)
+            return Response(articleUpdateSerializer.data,status=200)
         return Response(articleUpdateSerializer.errors, status=400)
     # @method_decorator(RoleRequest(allowedRoles=['admin','Editor']))
     def delete(self,request,id):

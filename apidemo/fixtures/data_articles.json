@@ -1,0 +1,12 @@
+[
+    {
+        "model":"apidemo.Articles",
+        "pk":1,
+        "fields":{
+            "User":1,
+            "Title":"day la tuan li",
+            "Content":"nhattuan44t@gmail.com",
+            "Category":1
+        }
+    }
+]

@@ -6,3 +6,6 @@ class Articles(models.Model):
     Title = models.CharField(max_length=200)
     Content = models.CharField(max_length=200000)
     Category=models.ForeignKey(Category,related_name='tasks',on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.Title

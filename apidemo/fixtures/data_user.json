@@ -1,0 +1,12 @@
+[
+    {
+        "model":"apidemo.User",
+        "pk":1,
+        "fields":{
+            "UserName":"an",
+            "Age":18,
+            "Email":"nhattuan44t@gmail.com",
+            "Password":"22122002"
+        }
+    }
+]
